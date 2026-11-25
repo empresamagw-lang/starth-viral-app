@@ -1,0 +1,597 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Starth Viral App</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+
+/* Prancha: as telas paradas do app (design system do 01 Moldes), uma tela por estado, lado a lado. */
+:root{
+  --canvas:#F6F1E7; --card:#FFFCF6; --card2:#EFE8DA; --painel:#FBF8F1; --borda:#E3DAC8; --ctl:#8C8472;
+  --txt:#14161A; --txt2:#33384A; --ap:#5B6072; --azul:#1E3FD2; --laranja:#FA5F26; --noite:#070B18; --verde:#1F9D55;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",Arial,sans-serif;
+  --page:#E9E3D6; color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--page);color:var(--txt);font-family:var(--font);-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1500px;margin:0 auto;padding-block:28px 60px}
+.wrap>h1{font:700 26px/1.1 var(--font);letter-spacing:-.02em;margin:0 0 4px}
+.wrap>p{margin:0 0 22px;color:var(--ap);font-size:15px}
+.grp{margin:0 0 34px}
+.grp h2{font:600 15px var(--font);color:var(--txt2);margin:0 0 12px}
+.row{display:flex;gap:22px;overflow-x:auto;padding-bottom:10px}
+.cell{flex:0 0 auto;display:flex;flex-direction:column;gap:8px}
+.cell>span{font:500 13px var(--font);color:var(--ap)}
+.frame{width:282px;height:611px;position:relative;border-radius:44px;overflow:hidden;box-shadow:0 0 0 7px #0E0F13,0 0 0 8px #34363d,0 20px 40px rgba(0,0,0,.18)}
+.scr{position:absolute;left:0;top:0;width:393px;height:852px;transform:scale(.7176);transform-origin:0 0;background:var(--canvas);overflow:hidden}
+
+/* ---- iOS chrome ---- */
+.sb{height:54px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 32px 8px 40px;font:600 17px var(--font);letter-spacing:-.01em}
+.sb .ic{display:flex;gap:6px;align-items:center}
+.sb svg{height:12px}
+.home{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:var(--txt)}
+.nav{height:52px;display:grid;grid-template-columns:52px 1fr 92px;align-items:center;padding:0 16px}
+.nav .bk{width:34px;height:34px;border-radius:50%;background:var(--card);border:1px solid var(--borda);display:grid;place-items:center}
+.nav .bk svg{width:16px;height:16px}
+.nav .t{text-align:center;display:flex;flex-direction:column;gap:1px}
+.nav .t b{font:600 17px var(--font);letter-spacing:-.02em}.nav .t small{font:400 12px var(--font);color:var(--ap)}
+.pill{height:34px;border-radius:17px;background:var(--azul);color:#fff;font:600 15px var(--font);display:inline-grid;place-items:center;padding:0 14px;justify-self:end}
+.pill.off{background:var(--card2);color:var(--ap)}
+
+/* ---- editor ---- */
+.pv{position:relative;margin:4px auto 0;width:222px;height:395px;border-radius:22px;overflow:hidden;background:#222 center/cover;box-shadow:0 1px 2px rgba(20,22,26,.06),0 14px 34px rgba(20,22,26,.14)}
+.chip{position:absolute;top:12px;left:12px;height:26px;border-radius:13px;padding:0 10px 0 8px;display:flex;align-items:center;gap:6px;background:rgba(7,11,24,.72);color:#fff;font:600 12px var(--font);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.chip svg{width:14px;height:14px}
+.trow{display:grid;grid-template-columns:1fr 46px 1fr;align-items:center;padding:12px 24px 0}
+.trow .tc{font:500 15px var(--font);font-variant-numeric:tabular-nums;color:var(--ap)}.trow .tc b{color:var(--txt);font-weight:600}
+.play{width:46px;height:46px;border-radius:50%;background:var(--card);border:1px solid var(--borda);display:grid;place-items:center}
+.play svg{width:16px;height:16px;margin-left:2px}
+.tl{margin:12px 16px 0;background:var(--card);border:1px solid var(--borda);border-radius:20px;padding:10px;display:flex;flex-direction:column;gap:8px;position:relative}
+.film{height:52px;border-radius:9px;background:#333 0 0/100% 100%}
+.voz{height:36px;border-radius:10px;background:var(--card2);display:flex;align-items:center;gap:8px;padding:0 10px;font:500 14px var(--font)}
+.voz i{width:8px;height:8px;border-radius:50%;background:var(--laranja);flex:0 0 auto}
+.voz svg{flex:1;height:22px;min-width:0}
+.voz rect{fill:#B9AF9C}
+.add{height:36px;border-radius:10px;border:1px dashed var(--ctl);display:flex;align-items:center;padding:0 12px;font:500 14px var(--font);color:var(--txt2)}
+.needle{position:absolute;top:2px;width:2px;height:106px;background:var(--txt);border-radius:1px}
+.needle::before{content:"";position:absolute;top:-3px;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--txt)}
+.bar{position:absolute;left:12px;right:12px;bottom:26px;height:70px;background:var(--card);border:1px solid var(--borda);border-radius:24px;display:grid;grid-template-columns:repeat(4,1fr);padding:6px;gap:4px}
+.bar span{border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:500 12px var(--font);color:var(--txt2)}
+.bar span svg{width:23px;height:23px}
+.bar span.on{background:var(--azul);color:#fff}
+
+/* ---- sheet ---- */
+.dim{position:absolute;inset:0;background:rgba(7,11,24,.32)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--painel);border-radius:28px 28px 0 0;padding:8px 16px 0;box-shadow:0 -10px 30px rgba(7,11,24,.12)}
+.grab{width:36px;height:5px;border-radius:3px;background:#D6CDBC;margin:0 auto 10px}
+.sh-h{display:flex;justify-content:space-between;align-items:flex-start;padding:0 4px 4px}
+.sh-h b{font:600 20px var(--font);letter-spacing:-.02em;display:block}
+.sh-h small{font:400 15px var(--font);color:var(--ap)}
+.x{width:30px;height:30px;border-radius:50%;background:var(--card2);display:grid;place-items:center;flex:0 0 auto}
+.x svg{width:12px;height:12px}
+.lab{font:500 13px var(--font);color:var(--ap);padding:12px 6px 6px}
+.list{background:var(--card);border:1px solid var(--borda);border-radius:16px;overflow:hidden}
+.li{display:grid;grid-template-columns:30px 1fr auto 24px;gap:12px;align-items:center;padding:8px 12px;position:relative}
+.li+.li::before{content:"";position:absolute;top:0;left:54px;right:0;height:1px;background:var(--borda)}
+.li .th{width:30px;height:52px;border-radius:6px;background:#333 center/cover}
+.li .tx{font:400 15px/1.25 var(--font);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li .d{font:400 13px var(--font);color:var(--ap);font-variant-numeric:tabular-nums}
+.ck{width:22px;height:22px;border-radius:50%;background:var(--azul);display:grid;place-items:center}
+.ck svg{width:12px;height:12px}
+.cta{height:50px;border-radius:25px;background:var(--azul);color:#fff;font:600 17px var(--font);display:grid;place-items:center;margin:14px 0 0}
+.cta.sec{background:transparent;color:var(--azul);height:40px;margin-top:4px}
+
+/* ---- canvas de versões (gramática Ads Engine) ---- */
+.cv{position:relative;height:700px}
+.src{position:absolute;left:50%;top:14px;width:88px;margin-left:-44px}
+.src .v{height:156px;border-radius:12px;background:#333 center/cover;box-shadow:0 1px 2px rgba(20,22,26,.06),0 10px 24px rgba(20,22,26,.12)}
+.src .cap{display:flex;align-items:center;gap:6px;margin-top:6px;font:500 12px var(--font);color:var(--txt2)}
+.src .cap i{flex:1;height:1px;background:var(--borda)}
+.cv svg.lines{position:absolute;left:0;top:0;width:393px;height:700px}
+.cols{position:absolute;left:16px;right:16px;top:250px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.hk{font:500 11px/1.25 var(--font);color:var(--ap);height:28px;overflow:hidden;text-align:center}
+.vv{position:relative;aspect-ratio:9/16;border-radius:10px;background:#333 center/cover;box-shadow:0 1px 2px rgba(20,22,26,.06),0 8px 18px rgba(20,22,26,.12);overflow:hidden}
+.vv.blur{filter:blur(6px) saturate(.6);opacity:.55;box-shadow:none}
+.vv.ghost{background:var(--card2);box-shadow:none}
+.vv .fl{position:absolute;left:6px;bottom:6px;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center}
+.vv .fl svg{width:9px;height:9px}
+.vv.sel{outline:2px solid var(--azul);outline-offset:2px}
+
+/* ---- versão aberta ---- */
+.big{position:relative;margin:4px auto 0;width:300px;height:533px;border-radius:24px;overflow:hidden;background:#222 center/cover;box-shadow:0 14px 34px rgba(20,22,26,.18)}
+.parts{margin:14px 16px 0;display:flex;flex-direction:column;gap:8px}
+.part{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:center;background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:8px 12px}
+.part .th{width:26px;height:46px;border-radius:5px;background:#333 center/cover}
+.part small{display:block;font:500 12px var(--font);color:var(--ap)}
+.part b{display:block;font:400 15px/1.25 var(--font);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---- agenda do teste ---- */
+.sum{margin:6px 16px 0;padding:16px;background:var(--card);border:1px solid var(--borda);border-radius:20px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.sum b{font:600 17px var(--font)}.sum small{font:400 14px var(--font);color:var(--ap)}
+.tag{height:26px;border-radius:13px;padding:0 10px;font:600 12px var(--font);display:inline-flex;align-items:center;gap:6px;background:#E7F4EC;color:var(--verde);grid-row:span 2}
+.tag i{width:7px;height:7px;border-radius:50%;background:var(--verde)}
+.sched .li{grid-template-columns:30px 1fr auto}
+.sched .st{font:500 13px var(--font);color:var(--ap);display:flex;align-items:center;gap:6px}
+.sched .st i{width:7px;height:7px;border-radius:50%;background:#C9C0AE}
+.sched .st.on{color:var(--verde)}.sched .st.on i{background:var(--verde)}
+
+/* ---- prever ---- */
+.chart{margin:4px 0 0;background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:12px 12px 6px}
+.chart svg{width:100%;height:150px;display:block}
+.chart text{font:500 10px var(--font);fill:var(--ap)}
+.ch-h{display:flex;justify-content:space-between;align-items:baseline;padding:0 2px 6px}
+.ch-h b{font:600 15px var(--font)}.ch-h small{font:400 13px var(--font);color:var(--ap)}
+.callout{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:center;margin-top:10px;background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:8px 12px}
+.callout .th{width:30px;height:52px;border-radius:6px;background:#333 center/cover}
+.callout b{font:600 15px var(--font);display:block}.callout small{font:400 13px var(--font);color:var(--ap)}
+
+/* ---- raio-x ---- */
+.field{margin:10px 16px 0;background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:10px;font:400 15px var(--font);color:var(--txt2)}
+.field svg{width:18px;height:18px;flex:0 0 auto}
+.field span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prevlink{margin:10px 16px 0;background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:10px;display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center}
+.prevlink .th{width:64px;height:114px;border-radius:10px;background:#333 center/cover}
+.prevlink b{font:600 15px var(--font);display:block}.prevlink small{font:400 13px var(--font);color:var(--ap)}
+.mid{position:relative;margin:4px auto 0;width:200px;height:356px;border-radius:20px;overflow:hidden;background:#222 center/cover;box-shadow:0 14px 34px rgba(20,22,26,.16)}
+.struct{margin:14px 16px 0;position:relative;padding-top:40px}
+.struct svg.arc{position:absolute;left:0;top:0;width:100%;height:46px}
+.segs{display:flex;gap:3px;height:34px}
+.segs span{border-radius:8px;background:var(--card2);display:grid;place-items:center;font:500 12px var(--font);color:var(--txt2);min-width:0;overflow:hidden;white-space:nowrap}
+.segs span.ab{background:#E5E9FB;color:var(--azul)}
+.segs span.fe{background:#FEE7DC;color:#C2431A}
+.ticks{display:flex;justify-content:space-between;font:500 11px var(--font);color:var(--ap);margin-top:6px;font-variant-numeric:tabular-nums}
+.quote{margin:10px 16px 0;display:grid;grid-template-columns:3px 1fr;gap:10px}
+.quote i{border-radius:2px}
+.quote small{display:block;font:500 12px var(--font);color:var(--ap)}
+.quote b{display:block;font:400 15px/1.3 var(--font)}
+
+/* ===== app vivo ===== */
+html,body{height:100%}
+body{padding:0!important;background:var(--page);overflow:hidden}
+.stage{position:fixed;inset:0;display:grid;place-items:center;background:var(--canvas)}
+@media (min-width:560px){.stage{background:radial-gradient(120% 90% at 15% 0%,#F3E7D3 0%,#E9E3D6 55%,#DCD4C4 100%)}}
+.holder{position:relative}
+.app{position:absolute;left:0;top:0;width:393px;height:852px;overflow:hidden;overflow:clip;background:var(--canvas)}
+.screen{overflow:hidden;overflow:clip}
+.bezel .app{border-radius:54px;box-shadow:0 0 0 10px #0E0F13,0 0 0 11.5px #3a3c43,0 40px 80px rgba(20,22,26,.28)}
+.screen{position:absolute;inset:0;background:var(--canvas);transition:transform .52s cubic-bezier(.22,1,.36,1),filter .52s ease;will-change:transform}
+.screen.off{transform:translateX(100%)}
+.screen.under{transform:translateX(-26%);filter:brightness(.94)}
+.screen.inst{transition:none}
+.tap{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.touch{position:absolute;z-index:50;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(20,22,26,.2);pointer-events:none;animation:touch .5s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes touch{0%{transform:scale(.45);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.dim{opacity:0;pointer-events:none;transition:opacity .35s ease}
+.dim.on{opacity:1;pointer-events:auto}
+.sheet{transform:translateY(105%);transition:transform .95s cubic-bezier(.16,1,.3,1),top .7s cubic-bezier(.22,1,.36,1);z-index:5}
+.sheet.on{transform:none}
+.sheet.out{transition:transform .32s cubic-bezier(.4,0,1,1);transform:translateY(105%)}
+.rv{opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .5s cubic-bezier(.22,1,.36,1)}
+.rv.in{opacity:1;transform:none}
+.ck{transform:scale(.5);opacity:0;transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .2s}
+.ck.in{transform:none;opacity:1}
+.cta{transition:opacity .35s ease,transform .15s ease;cursor:pointer}
+.cta.dis{opacity:.4;pointer-events:none}
+.cta:active{transform:scale(.98)}
+.cta .sp{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .8s linear infinite;display:inline-block;margin-right:8px;vertical-align:-3px}
+.ios-sp{width:14px;height:14px;border-radius:50%;border:2px solid #D6CDBC;border-top-color:var(--ap);animation:spin .8s linear infinite;display:inline-block;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pv video,.big video,.mid video,.vv video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pv{transition:opacity .3s}
+.film{position:relative;overflow:hidden;transition:background-image .2s}
+.cutveil{position:absolute;top:0;bottom:0;left:0;background:rgba(246,241,231,.62);border-right:2px solid var(--azul);width:0;opacity:0;transition:opacity .25s}
+.needle{transition:none;will-change:left}
+.add{transition:background .3s,border-color .3s,color .3s}
+.bar span{transition:background .3s ease,color .3s ease}
+.pill{transition:background .4s ease,color .4s ease}
+/* canvas */
+.lines path{stroke-dasharray:var(--L);stroke-dashoffset:var(--L);transition:stroke-dashoffset .8s cubic-bezier(.22,1,.36,1)}
+.lines.in path{stroke-dashoffset:0}
+.hk{opacity:0;transition:opacity .4s ease}
+.hk.in{opacity:1}
+.vv{transition:filter .75s cubic-bezier(.22,1,.36,1),opacity .6s ease,transform .75s cubic-bezier(.22,1,.36,1),box-shadow .6s;cursor:pointer}
+.vv.pre{filter:blur(12px) saturate(.7);opacity:0;transform:scale(.93);box-shadow:none}
+.src{opacity:0;transform:translateY(8px);transition:opacity .5s,transform .6s cubic-bezier(.22,1,.36,1)}
+.src.in{opacity:1;transform:none}
+.src .v{position:relative;overflow:hidden}
+.clone{position:absolute;z-index:40;border-radius:10px;overflow:hidden;background:#222 center/cover;transition:all .55s cubic-bezier(.22,1,.36,1)}
+.clone video{width:100%;height:100%;object-fit:cover}
+/* prever */
+.chart svg{overflow:visible}
+.dot{transform-box:fill-box;transform-origin:center;transform:scale(0);transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.dot.in{transform:scale(1)}
+.callout,.sheet .cta.late{opacity:0;transform:translateY(8px);transition:opacity .4s,transform .5s cubic-bezier(.22,1,.36,1)}
+.callout.in,.sheet .cta.late.in{opacity:1;transform:none}
+/* raio-x */
+.field{transition:border-color .2s}
+.field.focus{border-color:var(--azul)}
+.field .ph{color:#9A9282}
+.paste{position:absolute;left:24px;top:64px;background:#1C1C1E;color:#fff;font:500 14px var(--font);padding:9px 14px;border-radius:9px;opacity:0;transform:translateY(4px) scale(.96);transition:opacity .2s,transform .25s cubic-bezier(.22,1,.36,1);pointer-events:none}
+.paste::after{content:"";position:absolute;left:22px;bottom:-6px;border:6px solid transparent;border-top-color:#1C1C1E;border-bottom:0}
+.paste.in{opacity:1;transform:none;pointer-events:auto}
+.prevlink{opacity:0;transform:translateY(10px);transition:opacity .45s,transform .6s cubic-bezier(.22,1,.36,1)}
+.prevlink.in{opacity:1;transform:none}
+.segs span{transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.segs span.in{transform:none}
+.segs span b{font-weight:500;opacity:0;transition:opacity .3s .2s}
+.segs span.in b{opacity:1}
+.struct .arc path{stroke-dasharray:420;stroke-dashoffset:420;transition:stroke-dashoffset 1.1s cubic-bezier(.45,0,.2,1)}
+.struct .arc.in path{stroke-dashoffset:0}
+.struct .arc path.hd{opacity:0;transition:opacity .2s 1s;stroke-dasharray:none;stroke-dashoffset:0}
+.struct .arc.in path.hd{opacity:1}
+.mk{position:absolute;bottom:20px;width:2px;height:42px;background:var(--txt);border-radius:1px;opacity:0;transition:opacity .3s}
+.mk.in{opacity:.85}
+.quote{opacity:0;transform:translateY(6px);transition:opacity .4s,transform .5s cubic-bezier(.22,1,.36,1)}
+.quote.in{opacity:1;transform:none}
+#shm .li{padding:6px 12px;grid-template-columns:26px 1fr auto 22px}#shm .li .th{width:26px;height:46px}#shm .li+.li::before{left:50px}#shm .lab{padding-top:10px}#shm .cta{margin-top:12px}
+#vo .big{width:281px;height:500px}.part>span{min-width:0}
+.dim.light{background:rgba(7,11,24,.12)}
+/* ===== computador: app de mesa (barra lateral, prévia grande, painel à direita) ===== */
+body.desk .stage{background:var(--canvas)}
+body.desk .holder{position:fixed;inset:0;width:auto!important;height:auto!important}
+body.desk .app{position:fixed;inset:0;width:100%;height:100%;border-radius:0;box-shadow:none}
+body.desk .sb,body.desk .home,body.desk .grab{display:none}
+body.desk .nav{height:64px;padding:0 24px;grid-template-columns:52px 1fr 140px;border-bottom:1px solid var(--borda);background:var(--canvas);position:relative;z-index:3}
+body.desk .nav .t b{font-size:16px}
+body.desk .pill{height:34px}
+/* editor */
+body.desk #ed .bar{position:absolute;left:16px;top:80px;bottom:16px;right:auto;width:92px;height:auto;display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:24px}
+body.desk #ed .bar span{height:76px;flex:0 0 auto;font-size:12px}
+body.desk #ed .pv{position:absolute;margin:0;top:84px;bottom:262px;height:auto;width:auto;aspect-ratio:9/16;left:calc(124px + (100% - 124px - 16px)/2);transform:translateX(-50%);border-radius:26px;transition:left .6s cubic-bezier(.22,1,.36,1)}
+body.desk #ed.paneled .pv{left:calc(124px + (100% - 124px - 436px)/2)}
+body.desk #ed .trow{position:absolute;left:124px;right:16px;bottom:186px;padding:0 24px;transition:right .6s cubic-bezier(.22,1,.36,1)}
+body.desk #ed.paneled .trow{right:436px}
+body.desk #ed .tl{position:absolute;left:124px;right:16px;bottom:16px;margin:0 24px;transition:right .6s cubic-bezier(.22,1,.36,1)}
+body.desk #ed.paneled .tl{right:436px}
+body.desk #ed .film{height:64px}
+body.desk #ed .needle{height:118px}
+body.desk .dim{display:none}
+body.desk .sheet{left:auto!important;right:16px;top:80px!important;bottom:16px;width:400px;border-radius:24px;padding:18px 18px 0;overflow:auto;transform:translateX(calc(100% + 24px));box-shadow:0 1px 2px rgba(20,22,26,.05),0 16px 40px rgba(20,22,26,.1);border:1px solid var(--borda)}
+body.desk .sheet.on{transform:none}
+body.desk .sheet.out{transform:translateX(calc(100% + 24px))}
+/* versões */
+body.desk #vs .cv{position:absolute;left:0;right:0;top:64px;bottom:0;height:auto}
+body.desk #vs .src{top:20px;width:102px;margin-left:-51px}
+body.desk #vs .src .v{height:181px;border-radius:14px}
+body.desk #vs .src .cap{font-size:13px}
+body.desk #vs .cols{--cw:min(92vw,calc((100vh - 434px) * .9375 + 88px));top:272px;left:calc(50% - var(--cw)/2);right:auto;width:var(--cw);gap:22px}
+body.desk #vs .col{gap:12px}
+body.desk #vs .hk{font-size:13px;height:34px}
+body.desk #vs .vv{border-radius:14px}
+body.desk #vs .vv .fl{width:22px;height:22px;left:8px;bottom:8px}
+body.desk #vs .vv .fl svg{width:12px;height:12px}
+body.desk #vs .cv{overflow:auto}
+/* versão aberta */
+body.desk #vo .big{position:absolute;margin:0;top:88px;bottom:28px;height:auto!important;width:auto!important;aspect-ratio:9/16;right:calc(50% + 20px);left:auto}
+body.desk #vo .parts{position:absolute;left:calc(50% + 20px);top:120px;width:380px;margin:0}
+body.desk #vo .ctaw{position:absolute;left:calc(50% + 20px);top:290px;width:380px;padding:0!important}
+/* teste, raio-x 1 e 3: coluna central */
+body.desk #te .sum,body.desk #te .lab,body.desk #te .list,body.desk #r1 .field,body.desk #r1 .prevlink,body.desk #r1 .ctaw,body.desk #r3 .lab,body.desk #r3 .parts,body.desk #r3 .ctaw{width:560px;max-width:calc(100% - 48px);margin-left:auto!important;margin-right:auto!important}
+body.desk #te .sum,body.desk #r1 .field,body.desk #r3 .lab{margin-top:32px}
+body.desk #r1 .ctaw,body.desk #r3 .ctaw{padding:0!important}
+body.desk #r1 .paste{left:calc(50% - 272px);top:78px}
+/* raio-x 2: vídeo à esquerda, análise à direita */
+body.desk #r2 .mid{position:absolute;margin:0;top:88px;bottom:28px;height:auto;width:auto;aspect-ratio:9/16;right:calc(50% + 20px);left:auto}
+body.desk #r2 .struct,body.desk #r2 .quote,body.desk #r2 .ctaw{margin-left:calc(50% + 20px)!important;width:min(520px,44vw);padding:0!important}
+body.desk #r2 .struct{margin-top:140px}
+body.desk #r2 .quote{margin-top:18px}
+body.desk #r2 .quote b{font-size:17px}
+
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important;animation-duration:.01s!important}}
+</style>
+
+</head><body>
+<div class="stage"><div class="holder" id="holder"><div class="app" id="app">
+
+ <!-- EDITOR -->
+ <section class="screen" id="ed">
+  <div class="sb"><span>9:41</span><span class="ic" id="sbic"></span></div>
+  <div class="nav"><span class="bk tap" id="edback"></span><span class="t"><b>Episódio 4</b><small>Rascunho</small></span><span class="pill">Exportar</span></div>
+  <div class="pv" id="pv"><video id="pvv" muted playsinline preload="auto"></video></div>
+  <div class="trow"><span class="tc"><b id="tcur">0:00</b> / <span id="tdur">0:31</span></span><span class="play tap" id="playb"></span><span></span></div>
+  <div class="tl" id="tl"><div class="film" id="film"><div class="cutveil" id="veil"></div></div><div class="voz"><i></i>Voz<svg id="wave" viewBox="0 0 180 30" preserveAspectRatio="none"></svg></div><div class="add" id="add">+ Multiplicar</div><span class="needle" id="needle"></span></div>
+  <div class="bar" id="bar"></div>
+  <div class="dim" id="dim"></div>
+  <div class="sheet" id="shm" style="top:104px"><div class="grab"></div>
+   <div class="sh-h"><div><b>Multiplicar</b><small id="shm-sub"></small></div><span class="x tap" data-close></span></div>
+   <div class="lab">Ganchos</div><div class="list" id="lh"></div>
+   <div class="lab">Finais</div><div class="list" id="lf"></div>
+   <div class="cta tap dis" id="go15">Criar 15 versões</div></div>
+  <div class="sheet" id="shp" style="top:470px"><div class="grab"></div>
+   <div class="sh-h"><div><b>Prever retenção</b><small id="shp-sub">Assistindo o seu vídeo</small></div><span class="x tap" data-close></span></div>
+   <div class="chart"><svg viewBox="0 0 330 146" id="chart"></svg></div>
+   <div class="callout" id="call"><span class="th" style="background-image:url(media/v4/sim_raw2.jpg)"></span><span><b>Falso começo · 0:04</b><small>Você repete a primeira frase</small></span></div>
+   <div class="cta tap late" id="cut">Cortar e prever de novo</div></div>
+  <span class="home"></span>
+ </section>
+
+ <!-- VERSÕES -->
+ <section class="screen off" id="vs">
+  <div class="sb"><span>9:41</span><span class="ic"></span></div>
+  <div class="nav"><span class="bk tap" data-pop></span><span class="t"><b>Versões</b><small>Episódio 4</small></span><span class="pill off" id="postar">Postar</span></div>
+  <div class="cv"><svg class="lines" id="lines" viewBox="0 0 393 700"></svg>
+   <div class="src" id="src"><div class="v" style="background-image:url(media/v4/bruto.jpg)"></div><div class="cap">Seu vídeo<i></i></div></div>
+   <div class="cols" id="cols"></div></div>
+  <span class="home"></span>
+ </section>
+
+ <!-- VERSÃO ABERTA -->
+ <section class="screen off" id="vo">
+  <div class="sb"><span>9:41</span><span class="ic"></span></div>
+  <div class="nav"><span class="bk tap" data-pop></span><span class="t"><b id="vo-t">Versão 1</b><small id="vo-s"></small></span><span></span></div>
+  <div class="big" id="big"><video id="bigv" muted playsinline loop preload="auto"></video></div>
+  <div class="parts" id="vo-parts"></div>
+  <div class="ctaw" style="padding:0 16px"><div class="cta tap" id="vo-cta">Postar as 15 como teste</div></div>
+  <span class="home"></span>
+ </section>
+
+ <!-- TESTE -->
+ <section class="screen off" id="te">
+  <div class="sb"><span>9:41</span><span class="ic"></span></div>
+  <div class="nav"><span class="bk tap" data-pop></span><span class="t"><b>Teste A/B</b><small>15 versões</small></span><span></span></div>
+  <div class="sum rv" id="te-sum"><b>Reels de teste</b><span class="tag"><i></i>No ar</span><small>Só pra quem ainda não te segue</small></div>
+  <div class="lab" style="padding-left:22px">Agenda</div>
+  <div class="list sched" id="te-list" style="margin:0 16px"></div>
+  <span class="home"></span>
+ </section>
+
+ <!-- RAIO-X 1 -->
+ <section class="screen off" id="r1">
+  <div class="sb"><span>9:41</span><span class="ic"></span></div>
+  <div class="nav"><span class="bk tap" data-pop></span><span class="t"><b>Raio-X</b><small>De um viral</small></span><span></span></div>
+  <div class="field tap" id="fld"><span class="lk"></span><span id="fld-t" class="ph">Cole o link de um viral</span></div>
+  <div class="paste tap" id="paste">Colar</div>
+  <div class="prevlink" id="plink"><span class="th" style="background-image:url(media/v4/maria.jpg)"></span><span><b>@mariadonofrio_</b><small>Reel · 0:49</small></span></div>
+  <div class="ctaw" style="padding:0 16px"><div class="cta tap dis" id="anl">Analisar</div></div>
+  <span class="home"></span>
+ </section>
+
+ <!-- RAIO-X 2 -->
+ <section class="screen off" id="r2">
+  <div class="sb"><span>9:41</span><span class="ic"></span></div>
+  <div class="nav"><span class="bk tap" data-pop></span><span class="t"><b>Raio-X</b><small>@mariadonofrio_</small></span><span></span></div>
+  <div class="mid"><video id="mv" muted playsinline loop preload="auto" src="media/v4/maria.mp4"></video></div>
+  <div class="struct" id="struct"></div>
+  <div class="quote" id="q1"><i style="background:#1E3FD2"></i><span><small>Abre</small><b>“Quanto mais eu postava, mais eu virava outra pessoa.”</b></span></div>
+  <div class="quote" id="q2"><i style="background:#FA5F26"></i><span><small>Fecha</small><b>“Juntos, eles criam uma pessoa que você reconhece.”</b></span></div>
+  <div class="ctaw" style="padding:0 16px"><div class="cta tap late dis" id="usar" style="margin-top:12px">Usar no meu vídeo</div></div>
+  <span class="home"></span>
+ </section>
+
+ <!-- RAIO-X 3 -->
+ <section class="screen off" id="r3">
+  <div class="sb"><span>9:41</span><span class="ic"></span></div>
+  <div class="nav"><span class="bk tap" data-pop></span><span class="t"><b>Raio-X</b><small>No seu vídeo</small></span><span></span></div>
+  <div class="lab" style="padding-left:22px">O mesmo círculo, com as suas falas</div>
+  <div class="parts" id="r3-parts" style="margin-top:0"></div>
+  <div class="ctaw" style="padding:0 16px"><div class="cta tap" id="montar">Montar meu vídeo</div></div>
+  <span class="home"></span>
+ </section>
+
+</div></div></div>
+
+<script>
+window.APPDATA={"wave": [0.022, 0.036, 0.471, 0.362, 0.918, 0.609, 0.157, 0.14, 0.404, 0.404, 0.602, 0.757, 0.679, 0.666, 0.485, 0.382, 0.309, 0.488, 0.207, 0.036, 0.036, 0.035, 0.251, 0.434, 0.521, 0.6, 0.447, 0.315, 0.19, 0.247, 0.366, 0.461, 0.674, 0.802, 0.715, 0.532, 0.559, 0.257, 0.046, 0.041, 0.695, 1, 0.698, 0.459, 0.6, 0.519, 0.293, 0.141, 0.029, 0.114, 0.332, 0.398, 0.393, 0.052, 0.027, 0.357, 0.333, 0.289, 0.338, 0.287, 0.371, 0.359, 0.277, 0.26, 0.205, 0.183, 0.057, 0.017, 0.016, 0.015, 0.016, 0.239, 0.356, 0.333, 0.269, 0.162, 0.036, 0.02, 0.016, 0.016, 0.015, 0.372, 0.609, 0.372, 0.335, 0.371, 0.217, 0.041, 0.041, 0.029, 0.41, 0.418, 0.558, 0.332, 0.261, 0.169, 0.106, 0.174, 0.369, 0.073, 0.045, 0.049, 0.035, 0.268, 0.408, 0.248, 0.489, 0.426, 0.125, 0.216, 0.028, 0.065, 0.268, 0.216, 0.387, 0.386, 0.303, 0.31, 0.3, 0.222, 0.238, 0.211, 0.268, 0.191, 0.481, 0.392, 0.22, 0.144, 0.226, 0.289, 0.421, 0.377, 0.302, 0.257, 0.136, 0.065, 0.065, 0.021, 0.049, 0.04, 0.04, 0.587, 0.518, 0.21, 0.068, 0.024, 0.606, 0.352, 0.204, 0.167, 0.104, 0.409, 0.535, 0.483, 0.459, 0.362, 0.519, 0.322, 0.236, 0.565, 0.381, 0.562, 0.221, 0.33, 0.151, 0.638, 0.169, 0.025, 0.021, 0.515, 0.466, 0.783, 0.501, 0.634, 0.463, 0.502, 0.615, 0.467, 0.455, 0.461], "dur": 30.864, "hooks": [{"txt": "Sabe aquele vídeo que você gravou, editou, postou no maior capricho do mundo?", "short": "Sabe aquele vídeo", "d": "4,1 s"}, {"txt": "Os gringos, eles já dominaram esse jogo.", "short": "Os gringos", "d": "2,8 s"}, {"txt": "O segredo não está no gancho, está no final.", "short": "O segredo", "d": "1,8 s"}, {"txt": "Nenhum vídeo termina de verdade.", "short": "Nenhum vídeo termina", "d": "2,2 s"}, {"txt": "Você foi ver, deu 300 visualizações.", "short": "300 views", "d": "2,9 s"}], "finals": [{"txt": "Vem comigo, presta atenção.", "d": "1,4 s"}, {"txt": "Você não vai saber qual que é, mas no final eu te falo.", "d": "2,6 s"}, {"txt": "Agora eu vou abrir mais um círculo.", "d": "3,4 s"}], "simw": {"raw": [0.019, 0.023, 0.023, 0.037, 0.08, 0.424, 0.81, 0.458, 0.472, 0.129, 0.642, 0.525, 0.514, 0.385, 0.304, 0.484, 0.647, 0.398, 0.343, 0.111, 0.379, 0.311, 0.461, 0.184, 0.105, 0.243, 0.389, 0.094, 0.142, 0.6, 0.281, 0.324, 0.134, 0.064, 0.703, 0.547, 0.243, 0.081, 0.052, 0.038, 0.029, 0.025, 0.038, 0.031, 0.045, 0.229, 0.298, 0.446, 0.655, 0.255, 0.265, 0.615, 0.437, 0.088, 0.064, 0.084, 0.088, 0.088, 0.084, 0.08, 0.047, 0.039, 0.372, 0.399, 0.586, 0.216, 0.583, 0.339, 0.369, 0.135, 0.524, 0.785, 0.351, 0.306, 0.363, 0.295, 0.475, 0.324, 0.145, 0.396, 0.263, 0.245, 0.232, 0.086, 0.329, 0.678, 0.713, 0.515, 0.135, 0.067, 0.048, 0.049, 0.314, 0.225, 0.273, 0.058, 0.139, 0.534, 0.609, 0.473, 0.101, 0.066, 0.079, 0.077, 0.085, 0.042, 0.027, 0.408, 0.513, 0.126, 0.777, 0.59, 0.76, 1, 0.784, 0.367, 0.625, 0.508, 0.079, 0.219, 0.446, 0.351, 0.317, 0.553, 0.463, 0.714, 0.73, 0.697, 0.487, 0.357, 0.206, 0.134, 0.052, 0.032, 0.023, 0.03, 0.073, 0.211, 0.115, 0.641, 0.535, 0.355, 0.609, 0.519, 0.235, 0.076, 0.05, 0.05, 0.031, 0.101, 0.603, 0.289, 0.142, 0.445, 0.485, 0.306, 0.321, 0.547, 0.278, 0.475, 0.362, 0.318, 0.314, 0.56, 0.399, 0.362, 0.56, 0.38, 0.374, 0.315, 0.436, 0.126, 0.123, 0.242, 0.31, 0.287, 0.211, 0.069, 0.075, 0.104], "ed": [0.416, 0.671, 0.795, 0.723, 0.805, 0.747, 0.468, 0.561, 0.751, 0.58, 0.745, 0.573, 0.327, 0.345, 0.903, 0.908, 0.654, 0.801, 0.74, 0.6, 0.806, 0.586, 0.588, 0.839, 0.466, 0.399, 0.28, 0.696, 0.681, 0.791, 0.715, 0.776, 0.637, 0.425, 0.391, 0.768, 0.822, 0.746, 0.769, 0.578, 0.531, 0.577, 0.631, 0.625, 0.591, 0.612, 0.509, 0.728, 0.663, 0.629, 0.591, 0.422, 0.306, 0.396, 0.937, 0.896, 0.893, 0.809, 0.633, 0.557, 0.548, 0.822, 0.759, 0.331, 0.35, 0.802, 0.855, 0.677, 0.972, 1, 0.987, 0.88, 0.633, 0.646, 0.649, 0.802, 0.444, 0.276, 0.362, 0.521, 0.811, 0.726, 0.845, 0.752, 0.909, 0.815, 0.807, 0.816, 0.922, 0.855, 0.83, 0.871, 0.703, 0.756, 0.728, 0.721, 0.715, 0.662, 0.626, 0.61, 0.372, 0.457, 0.399, 0.213, 0.738, 0.636, 0.297, 0.452, 0.93, 0.999, 0.916, 0.751, 0.883, 0.963, 0.829, 0.799, 0.477, 0.365, 0.39, 0.309, 0.272, 0.606, 0.696, 0.993, 0.816, 0.654, 0.575, 0.757, 0.676, 0.705, 0.661, 0.569, 0.513, 0.785, 0.84, 0.746, 0.687, 0.978, 0.709, 0.671, 0.704, 0.604, 0.865, 0.818, 0.697, 0.584, 0.812, 0.77, 0.704, 0.907, 0.841, 0.708, 0.832, 0.772, 0.572, 0.416, 0.322, 0.371, 0.602, 0.688, 0.601, 0.725, 0.801, 0.698, 0.651, 0.622, 0.594, 0.411, 0.387, 0.344, 0.215, 0.351, 0.407, 0.633, 0.881, 0.82, 0.672, 0.72, 0.947, 0.802]}, "maria": [{"n": "Abre", "s": 0, "e": 7.5}, {"n": "Contexto", "s": 7.5, "e": 14.6}, {"n": "Virada", "s": 14.6, "e": 31.5}, {"n": "Fecha", "s": 31.5, "e": 37.3}, {"n": "Oferta", "s": 37.3, "e": 49.5}], "mariaCode": "…", "offs": {"1": 0.0, "2": 2.91, "3": 5.82, "4": 4.85, "5": 7.76, "6": 10.67, "7": 9.7, "8": 12.61, "9": 0.45, "10": 1.15, "11": 2.79, "12": 4.9, "13": 5.33, "14": 6.98, "15": 9.09}, "meuCirculo": [{"n": "Abre", "img": "h1.jpg", "txt": "Sabe aquele vídeo que você gravou, editou, postou no maior capricho do mundo?"}, {"n": "Contexto", "img": "h5.jpg", "txt": "Você foi ver, deu 300 visualizações."}, {"n": "Virada", "img": "h3.jpg", "txt": "O segredo não está no gancho, está no final."}, {"n": "Fecha", "img": "h4.jpg", "txt": "Nenhum vídeo termina de verdade."}]};
+const D=window.APPDATA;
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const ICO={
+ sig:'<svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>',
+ wifi:'<svg viewBox="0 0 16 12"><path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.2-1.3A10 10 0 0 0 8 .4 10 10 0 0 0 .8 3.3L2 4.6a8.4 8.4 0 0 1 6-2.4zm0 3.6c1.3 0 2.5.5 3.4 1.3l1.2-1.3A6.6 6.6 0 0 0 8 4a6.6 6.6 0 0 0-4.6 1.8l1.2 1.3c.9-.8 2.1-1.3 3.4-1.3zM8 9.4l1.6-1.7a2.4 2.4 0 0 0-3.2 0z"/></svg>',
+ bat:'<svg viewBox="0 0 27 12"><rect x=".5" y=".5" width="23" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".35"/><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="24.5" y="4" width="1.8" height="4" rx=".9" opacity=".4"/></svg>',
+ back:'<svg viewBox="0 0 16 16" fill="none" stroke="#14161A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>',
+ play:'<svg viewBox="0 0 16 16"><path d="M4 2.5v11L13.5 8z" fill="#14161A"/></svg>',
+ pause:'<svg viewBox="0 0 16 16"><path d="M4 2.5h3v11H4zM9 2.5h3v11H9z" fill="#14161A"/></svg>',
+ x:'<svg viewBox="0 0 12 12" fill="none" stroke="#33384A" stroke-width="1.8" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg>',
+ ck:'<svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2l2.3 2.3 4.7-5"/></svg>',
+ edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+ mult:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.8"/></svg>',
+ prev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c3 0 4-9 7-9s3 6 5 6 3-4 6-4"/></svg>',
+ raio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>',
+ link:'<svg viewBox="0 0 24 24" fill="none" stroke="#5B6072" stroke-width="1.8" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1"/><path d="M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1"/></svg>',
+ chat:'<svg viewBox="0 0 12 12"><path d="M2 2.5h8v5.5H5l-3 2z" fill="#14161A"/></svg>',
+ next:'<svg viewBox="0 0 12 12"><path d="M3 2.5l5 3.5-5 3.5z M9 2.5v7" fill="#14161A" stroke="#14161A" stroke-width=".8"/></svg>',
+ loop:'<svg viewBox="0 0 12 12" fill="none" stroke="#14161A" stroke-width="1.6" stroke-linecap="round"><path d="M10 6a4 4 0 1 1-1.3-2.9"/><path d="M10 2v2.4H7.6"/></svg>'
+};
+const fmt=t=>`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
+const M='media/v4/';
+let token=0; // cancela fluxos ao reiniciar
+
+/* ---------- escala ---------- */
+const app=$('#app'), holder=$('#holder');
+const Q=location.search, FORCE=Q.includes('celular')?'cel':Q.includes('computador')?'desk':'';
+function fit(){const desk=FORCE==='desk'||(FORCE!=='cel'&&innerWidth>=900&&innerHeight>=560);
+  document.body.classList.toggle('desk',desk);
+  if(desk){app.style.zoom='';app._s=1;holder.style.width='';holder.style.height='';holder.classList.remove('bezel');if(window.drawLines)drawLines();return}
+  const bez=innerWidth>=560;holder.classList.toggle('bezel',bez);
+  const s=bez?Math.min(1.3,(innerHeight-70)/852,(innerWidth-40)/393):Math.min(innerWidth/393,innerHeight/852);
+  app.style.zoom=s;app._s=s;holder.style.width=393*s+'px';holder.style.height=852*s+'px';
+  if(window.drawLines)drawLines()}
+addEventListener('resize',fit);fit();
+app.addEventListener('scroll',()=>{if(app.scrollLeft||app.scrollTop){app.scrollLeft=0;app.scrollTop=0}});
+const toApp=(cx,cy)=>{const r=app.getBoundingClientRect();return[(cx-r.left)/app._s,(cy-r.top)/app._s]};
+app.addEventListener('pointerdown',e=>{const t=e.target.closest('.tap');if(!t)return;const[x,y]=toApp(e.clientX,e.clientY);const d=document.createElement('span');d.className='touch';d.style.left=x+'px';d.style.top=y+'px';app.appendChild(d);setTimeout(()=>d.remove(),520)});
+
+/* ---------- chrome ---------- */
+$$('.ic').forEach(e=>e.innerHTML=ICO.sig+ICO.wifi+ICO.bat);
+$$('.bk').forEach(e=>e.innerHTML=ICO.back);
+$$('.x').forEach(e=>e.innerHTML=ICO.x);
+$('#fld .lk').outerHTML=ICO.link;
+$('#playb').innerHTML=ICO.play;
+$('#bar').innerHTML=[['edit','Editar'],['mult','Multiplicar'],['prev','Prever'],['raio','Raio-X']].map(([k,l])=>`<span class="tap" data-k="${k}">${ICO[k]}${l}</span>`).join('');
+const setBar=k=>$$('#bar span').forEach(s=>s.classList.toggle('on',s.dataset.k===k));
+
+/* ---------- navegação ---------- */
+const stack=['ed'];
+async function push(id){const cur=$('#'+stack[stack.length-1]), nx=$('#'+id);nx.classList.add('inst','off');nx.getBoundingClientRect();nx.classList.remove('inst');stack.push(id);nx.style.zIndex=10+stack.length;cur.classList.add('under');nx.classList.remove('off');await wait(520)}
+async function pop(){if(stack.length<2)return;const cur=$('#'+stack.pop()), pv=$('#'+stack[stack.length-1]);cur.classList.add('off');pv.classList.remove('under');cur.querySelectorAll('video').forEach(v=>v.pause());await wait(520);if(stack.length===1)resetEditor()}
+$$('[data-pop]').forEach(b=>b.onclick=pop);
+
+/* ---------- editor ---------- */
+const pvv=$('#pvv'), film=$('#film'), needle=$('#needle');
+let media=null;
+function setMedia(m){media=m;pvv.src=m.src;pvv.currentTime=.05;film.style.backgroundImage=`url(${m.strip})`;
+  $('#wave').innerHTML=m.wave.map((w,i)=>`<rect x="${i+.2}" y="${(15-(2+w*12)).toFixed(1)}" width=".6" height="${(4+w*24).toFixed(1)}" rx=".3"/>`).join('');
+  $('#tdur').textContent=fmt(m.dur);film.style.width='';}
+const ED={mult:{src:'media/mult/source.mp4',strip:M+'strip.jpg',wave:D.wave,dur:D.dur},
+  raw:{src:M+'sim_raw.mp4',strip:M+'sim_strip.jpg',wave:D.simw.raw,dur:12.2},
+  ed:{src:M+'sim_ed.mp4',strip:M+'sim_strip_ed.jpg',wave:D.simw.ed,dur:7.7}};
+function loop(){const d=media?media.dur:1,t=Math.min(pvv.currentTime,d);$('#tcur').textContent=fmt(t);
+  const fx=film.offsetLeft, fw=film.offsetWidth; needle.style.left=(fx+t/d*fw-1)+'px'; if(typeof onTick==='function')onTick(t); requestAnimationFrame(loop)}
+let onTick=null;
+requestAnimationFrame(loop);
+$('#playb').onclick=()=>{if(pvv.paused){pvv.play();$('#playb').innerHTML=ICO.pause}else{pvv.pause();$('#playb').innerHTML=ICO.play}};
+pvv.onpause=()=>$('#playb').innerHTML=ICO.play; pvv.onplay=()=>$('#playb').innerHTML=ICO.pause;
+function resetEditor(){token++;$('#dim').classList.remove('light');onTick=null;closeSheets(true);setBar('edit');setMedia(ED.mult);pvv.playbackRate=1;pvv.pause();$('#add').textContent='+ Multiplicar';$('#veil').style.cssText=''}
+$('#edback').onclick=resetEditor;
+$('#bar').onclick=e=>{const s=e.target.closest('span[data-k]');if(!s)return;const k=s.dataset.k;
+  if(k==='edit')resetEditor(); if(k==='mult')flowMult(); if(k==='prev')flowPrev(); if(k==='raio')flowRaio();};
+function showSheet(el){$('#ed').classList.add('paneled');$('#dim').classList.add('on');el.classList.remove('out');el.getBoundingClientRect();el.classList.add('on')}
+function closeSheets(now){$('#ed').classList.remove('paneled');$('#dim').classList.remove('on');$$('.sheet').forEach(s=>{if(s.classList.contains('on')){s.classList.remove('on');if(!now){s.classList.add('out')}}})}
+$$('[data-close]').forEach(b=>b.onclick=()=>{token++;onTick=null;closeSheets();setBar('edit');pvv.pause();pvv.playbackRate=1});
+$('#dim').onclick=()=>{};
+
+/* ================= MULTIPLICAR ================= */
+const row=(img,txt,d)=>`<div class="li rv"><span class="th" style="background-image:url(${img})"></span><span class="tx">${txt}</span><span class="d">${d}</span><span class="ck">${ICO.ck}</span></div>`;
+async function flowMult(){
+  const my=++token; closeSheets(true); $('#dim').classList.remove('light'); setBar('mult'); if(media!==ED.mult) setMedia(ED.mult);
+  $('#lh').innerHTML=D.hooks.map((h,i)=>row(`${M}h${i+1}.jpg`,h.txt,h.d)).join('');
+  $('#lf').innerHTML=D.finals.map((h,i)=>row(`${M}f${i+1}.jpg`,h.txt,h.d)).join('');
+  $('#shm-sub').innerHTML='<span class="ios-sp"></span>Procurando ganchos e finais'; $('#go15').classList.add('dis');
+  pvv.currentTime=0; pvv.playbackRate=4; pvv.play().catch(()=>{});
+  showSheet($('#shm')); await wait(700); if(my!==token)return;
+  const rows=$$('#shm .li');
+  for(const r of rows){r.classList.add('in');await wait(230);if(my!==token)return}
+  $('#shm-sub').textContent='5 ganchos e 3 finais no seu vídeo';
+  for(const c of $$('#shm .ck')){c.classList.add('in');await wait(45)}
+  pvv.pause(); pvv.playbackRate=1; $('#go15').classList.remove('dis');
+}
+$('#go15').onclick=async()=>{const my=++token;$('#shm').classList.remove('on');$('#shm').classList.add('out');$('#dim').classList.remove('on');await wait(330);if(my!==token)return;buildCanvas();await push('vs');if(my!==token)return;playCanvas(my)};
+function buildCanvas(){
+  const colW=(393-32-36)/5, cx=i=>16+i*(colW+9)+colW/2;
+  $('#lines').classList.remove('in');
+  $('#src').classList.remove('in'); $('#postar').classList.add('off');
+  const fin=['chat','next','loop'];
+  $('#cols').innerHTML=[0,1,2,3,4].map(g=>`<div class="col"><div class="hk">${D.hooks[g].short}</div>${[0,1,2].map(f=>{const n=g*3+f+1;return `<div class="vv pre tap" data-n="${n}" data-g="${g}" data-f="${f}" style="background-image:url(${M}v${String(n).padStart(2,'0')}.jpg)"><video muted playsinline loop preload="none" data-src="${M}v${String(n).padStart(2,'0')}.mp4"></video><span class="fl" style="z-index:1">${ICO[fin[f]]}</span></div>`}).join('')}</div>`).join('');
+  $$('#cols .vv').forEach(v=>v.onclick=()=>openVersion(v));
+  drawLines();
+}
+function drawLines(){const cv=$('#vs .cv'),src=$('#src'),cols=$('#cols');if(!cols.children.length)return;
+  const W=cv.clientWidth,H=cv.clientHeight,sx=src.offsetLeft+src.offsetWidth/2,sy=src.offsetTop+src.offsetHeight+4,ty=cols.offsetTop+2;
+  const svg=$('#lines');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.style.width=W+'px';svg.style.height=H+'px';
+  svg.innerHTML=[...cols.children].map(c=>{const x=cols.offsetLeft+c.offsetLeft+c.offsetWidth/2,m=(sy+ty)/2;return `<path d="M${sx} ${sy} C${sx} ${m}, ${x} ${m-6}, ${x} ${ty}" fill="none" stroke="#CFC5B2" stroke-width="1.2"/>`}).join('');
+  svg.querySelectorAll('path').forEach(p=>p.style.setProperty('--L',p.getTotalLength()+1))}
+async function playCanvas(my){
+  drawLines(); $('#src').classList.add('in'); await wait(350); if(my!==token)return;
+  $('#lines').classList.add('in'); await wait(450);
+  $$('.hk').forEach((h,i)=>setTimeout(()=>h.classList.add('in'),i*60)); await wait(400);
+  const order=[];for(let g=0;g<5;g++)for(let f=0;f<3;f++)order.push($(`#cols .vv[data-n="${g*3+f+1}"]`));
+  for(const v of order){ if(my!==token)return; const vid=v.querySelector('video'); vid.addEventListener('loadedmetadata',()=>{vid.currentTime=D.offs[v.dataset.n]||0;vid.play().catch(()=>{})},{once:true}); vid.preload='auto'; vid.src=vid.dataset.src; vid.load();
+    v.classList.remove('pre'); await wait(170); }
+  await wait(500); if(my!==token)return; $('#postar').classList.remove('off');
+}
+async function openVersion(v){
+  if(v.classList.contains('pre'))return; const my=++token;
+  const n=+v.dataset.n, g=+v.dataset.g, f=+v.dataset.f;
+  $('#vo-t').textContent='Versão '+n; $('#vo-s').textContent=`Gancho ${g+1} · Final ${f+1}`;
+  $('#vo-parts').innerHTML=`<div class="part rv"><span class="th" style="background-image:url(${M}h${g+1}.jpg)"></span><span><small>Gancho</small><b>${D.hooks[g].txt}</b></span></div><div class="part rv"><span class="th" style="background-image:url(${M}f${f+1}.jpg)"></span><span><small>Final</small><b>${D.finals[f].txt}</b></span></div>`;
+  $('#vo-cta').textContent='Postar as 15 como teste';
+  const bv=$('#bigv'); bv.src=`${M}v${String(n).padStart(2,'0')}.mp4`; bv.currentTime=0;
+  // elemento compartilhado: o card cresce até o lugar do vídeo grande
+  const a=v.getBoundingClientRect(), s=app._s, ar=app.getBoundingClientRect();
+  const cl=document.createElement('div'); cl.className='clone'; cl.style.backgroundImage=v.style.backgroundImage;
+  Object.assign(cl.style,{left:(a.left-ar.left)/s+'px',top:(a.top-ar.top)/s+'px',width:a.width/s+'px',height:a.height/s+'px'});
+  app.appendChild(cl); cl.getBoundingClientRect();
+  const vo=$('#vo'); vo.classList.add('inst'); vo.classList.remove('off'); vo.style.opacity='0'; vo.getBoundingClientRect();
+  const bg=$('#big');Object.assign(cl.style,{left:bg.offsetLeft+'px',top:bg.offsetTop+'px',width:bg.offsetWidth+'px',height:bg.offsetHeight+'px',borderRadius:'24px'});
+  $('#vs').classList.add('under'); stack.push('vo'); vo.style.zIndex=10+stack.length;
+  bv.play().catch(()=>{});
+  await wait(560); vo.style.transition='opacity .2s'; vo.style.opacity='1'; await wait(200); cl.remove(); vo.classList.remove('inst'); vo.style.transition=''; vo.style.opacity='';
+  for(const p of $$('#vo-parts .part')){p.classList.add('in');await wait(90)}
+}
+$('#vo-cta').onclick=async()=>{ if($('#vo-cta').dataset.mode==='circ'){ return } const my=++token; buildTest(); await push('te'); if(my!==token)return;
+  $('#te-sum').classList.add('in'); await wait(200); for(const r of $$('#te-list .li')){r.classList.add('in');await wait(70)} };
+function buildTest(){const ord=[1,4,7,10,13,2,5,8,11,14];const when=['No ar','No ar','Hoje, 20:00','Hoje, 22:00','Amanhã, 08:00','Amanhã, 10:00','Amanhã, 12:00','Amanhã, 14:00','Amanhã, 16:00','Amanhã, 18:00'];
+  $('#te-sum').classList.remove('in');
+  $('#te-list').innerHTML=ord.map((n,k)=>`<div class="li rv"><span class="th" style="background-image:url(${M}v${String(n).padStart(2,'0')}.jpg)"></span><span class="tx">Versão ${n}</span><span class="st ${k<2?'on':''}"><i></i>${when[k]}</span></div>`).join('')}
+
+/* ================= PREVER ================= */
+const CA=[[0,100],[2,93],[3.8,86],[4.7,47],[6,40],[8,33],[10,27],[12.2,22]];
+const CB=[[0,100],[2,97],[4,95],[6,92],[7.7,89]];
+const CX=t=>20+t/12.2*296, CY=v=>10+(100-v)/100*112;
+function interp(c,t){for(let i=1;i<c.length;i++){if(t<=c[i][0]){const[t0,v0]=c[i-1],[t1,v1]=c[i];const k=(t-t0)/(t1-t0),e=k*k*(3-2*k);return v0+(v1-v0)*e}}return c[c.length-1][1]}
+function pathTo(c,t,scale=1){const n=Math.max(2,Math.round(t*12));let d='';for(let i=0;i<=n;i++){const tt=t*i/n;d+=(i?'L':'M')+CX(tt*scale).toFixed(1)+' '+CY(interp(c,tt)).toFixed(1)}return d}
+function chartBase(){$('#chart').innerHTML=`<line x1="20" x2="316" y1="10" y2="10" stroke="#EDE6D8"/><line x1="20" x2="316" y1="66" y2="66" stroke="#EDE6D8"/><line x1="20" x2="316" y1="122" y2="122" stroke="#EDE6D8"/><text x="20" y="140">0:00</text><text x="316" y="140" text-anchor="end" id="cend">0:12</text>
+  <path id="cold" fill="none" stroke="#B9AF9C" stroke-width="1.4" stroke-dasharray="3 4"/><path id="carea" fill="#1E3FD2" opacity=".08"/><path id="cline" fill="none" stroke="#1E3FD2" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <line id="cph" y1="6" y2="122" stroke="#14161A" stroke-width="1.2" opacity="0"/><circle id="cdot" class="dot" cx="${CX(4.4)}" cy="${CY(interp(CA,4.4))}" r="5" fill="#FA5F26"/>`}
+async function flowPrev(){
+  const my=++token; closeSheets(true); setBar('prev'); setMedia(ED.raw); chartBase(); $('#dim').classList.add('light');
+  const sh=$('#shp'); sh.style.top='470px'; $('#shp-sub').textContent='Assistindo o seu vídeo'; $('#call').classList.remove('in'); $('#cut').classList.remove('in'); $('#cut').classList.add('dis');
+  showSheet(sh); await wait(800); if(my!==token)return;
+  pvv.currentTime=0; pvv.play().catch(()=>{});
+  const line=$('#cline'),area=$('#carea'),ph=$('#cph'); ph.setAttribute('opacity','.9');
+  onTick=t=>{ if(my!==token)return; const d=pathTo(CA,t); line.setAttribute('d',d); area.setAttribute('d',d+` L${CX(t)} ${CY(0)} L${CX(0)} ${CY(0)} Z`); ph.setAttribute('x1',CX(t)); ph.setAttribute('x2',CX(t));
+    if(t>4.6) $('#cdot').classList.add('in'); };
+  await new Promise(r=>{pvv.onended=r; const chk=setInterval(()=>{if(my!==token||pvv.currentTime>=12.1){clearInterval(chk);r()}},100)}); pvv.onended=null;
+  if(my!==token)return; onTick=null; ph.setAttribute('opacity','0'); pvv.pause();
+  $('#shp-sub').textContent='Previsão para os primeiros segundos'; sh.style.top='400px'; await wait(350);
+  $('#call').classList.add('in'); await wait(150); $('#cut').classList.add('in'); $('#cut').classList.remove('dis');
+}
+$('#cut').onclick=async()=>{
+  const my=++token; $('#cut').classList.remove('in'); $('#cut').classList.add('dis'); $('#call').classList.remove('in');
+  $('#shp').style.top='800px'; $('#dim').classList.remove('on'); await wait(650); if(my!==token)return;
+  // corte na linha do tempo: véu sobre o falso começo, depois o trecho some e os blocos encostam
+  const veil=$('#veil'), fw=film.offsetWidth, cutw=fw*4.1/12.2;
+  veil.style.transition='none'; veil.style.width=cutw+'px'; veil.style.opacity='0'; veil.getBoundingClientRect(); veil.style.transition='opacity .25s'; veil.style.opacity='1';
+  await wait(650); if(my!==token)return;
+  film.style.transition='background-position .28s cubic-bezier(.22,1,.36,1)'; veil.style.transition='width .28s cubic-bezier(.22,1,.36,1),opacity .2s'; veil.style.width='0px'; veil.style.opacity='0';
+  await wait(320); if(my!==token)return; film.style.transition='';
+  setMedia(ED.ed);
+  $('#cold').setAttribute('d',pathTo(CA,12.2)); $('#cdot').classList.remove('in');
+  $('#cline').setAttribute('d',''); $('#carea').setAttribute('d','');
+  $('#shp-sub').textContent='Sem o falso começo · 4 s a menos';
+  await wait(700); if(my!==token)return; $('#shp').style.top='470px'; $('#dim').classList.add('on'); await wait(600); if(my!==token)return;
+  pvv.currentTime=0; pvv.play().catch(()=>{});
+  const line=$('#cline'),area=$('#carea'),ph=$('#cph'); ph.setAttribute('opacity','.9');
+  onTick=t=>{ if(my!==token)return; const tt=Math.min(t,7.7); const d=pathTo(CB,tt); line.setAttribute('d',d); area.setAttribute('d',d+` L${CX(tt)} ${CY(0)} L${CX(0)} ${CY(0)} Z`); ph.setAttribute('x1',CX(tt)); ph.setAttribute('x2',CX(tt)); if(t>=7.6){ph.setAttribute('opacity','0');onTick=null;pvv.pause()} };
+};
+
+/* ================= RAIO-X ================= */
+async function flowRaio(){
+  const my=++token; closeSheets(true); setBar('raio'); pvv.pause();
+  $('#fld-t').textContent='Cole o link de um viral'; $('#fld-t').className='ph'; $('#fld').classList.remove('focus'); $('#plink').classList.remove('in'); $('#paste').classList.remove('in'); $('#anl').classList.add('dis');
+  await push('r1');
+}
+$('#fld').onclick=()=>{ $('#fld').classList.add('focus'); $('#paste').classList.add('in') };
+$('#paste').onclick=async()=>{ const my=++token; $('#paste').classList.remove('in'); $('#fld-t').className=''; $('#fld-t').textContent='instagram.com/reel/'+D.mariaCode;
+  await wait(250); if(my!==token)return; $('#plink').classList.add('in'); await wait(350); $('#anl').classList.remove('dis'); $('#fld').classList.remove('focus') };
+$('#anl').onclick=async()=>{ const my=++token; buildStruct(); $('#q1').classList.remove('in'); $('#q2').classList.remove('in'); $('#usar').classList.remove('in'); $('#usar').classList.add('dis');
+  const mv=$('#mv'); mv.currentTime=0; await push('r2'); if(my!==token)return; mv.play().catch(()=>{});
+  for(const s of $$('#segs span')){ s.classList.add('in'); await wait(420); if(my!==token)return }
+  $('#arc').classList.add('in'); await wait(1200); if(my!==token)return;
+  $('#q1').classList.add('in'); await wait(250); $('#q2').classList.add('in'); await wait(300);
+  $('#usar').classList.add('in'); $('#usar').classList.remove('dis'); $('#mk').classList.add('in');
+};
+function buildStruct(){const S=D.maria, tot=S[S.length-1].e, W=361;
+  const x=t=>t/tot*W, a0=x(S[0].e/2), a1=x((S[3].s+S[3].e)/2);
+  $('#struct').innerHTML=`<svg class="arc" id="arc" viewBox="0 0 361 46" preserveAspectRatio="none"><path d="M${a1} 40 C ${a1-40} 0, ${a0+60} 0, ${a0} 40" fill="none" stroke="#FA5F26" stroke-width="1.6" stroke-linecap="round"/><path class="hd" d="M${a0-5} 33 L${a0} 40 L${a0+6} 34" fill="none" stroke="#FA5F26" stroke-width="1.6" stroke-linecap="round"/></svg>
+   <div class="segs" id="segs">${S.map((s,i)=>`<span class="${i===0?'ab':i===3?'fe':''}" style="flex:${s.e-s.s}"><b>${s.n}</b></span>`).join('')}</div>
+   <span class="mk" id="mk"></span><div class="ticks"><span>0:00</span><span>0:49</span></div>`;
+  const mv=$('#mv'); const tick=()=>{const mk=$('#mk'); if(!mk)return; mk.style.left=(mv.currentTime/tot*100)+'%'; requestAnimationFrame(tick)}; requestAnimationFrame(tick)}
+$('#usar').onclick=async()=>{ const my=++token;
+  $('#r3-parts').innerHTML=D.meuCirculo.map(p=>`<div class="part rv"><span class="th" style="background-image:url(${M}${p.img})"></span><span><small>${p.n}</small><b>${p.txt}</b></span></div>`).join('');
+  await push('r3'); if(my!==token)return; for(const p of $$('#r3-parts .part')){p.classList.add('in');await wait(110)} };
+$('#montar').onclick=async()=>{ const my=++token;
+  $('#vo-t').textContent='Seu vídeo'; $('#vo-s').textContent='Círculo de narrativa';
+  $('#vo-parts').innerHTML=`<div class="part rv"><span class="th" style="background-image:url(${M}h1.jpg)"></span><span><small>Abre</small><b>${D.meuCirculo[0].txt}</b></span></div><div class="part rv"><span class="th" style="background-image:url(${M}h4.jpg)"></span><span><small>Fecha</small><b>${D.meuCirculo[3].txt}</b></span></div>`;
+  $('#vo-cta').textContent='Postar'; $('#vo-cta').dataset.mode='circ';
+  const bv=$('#bigv'); bv.src=M+'circulo.mp4'; bv.currentTime=0;
+  await push('vo'); bv.play().catch(()=>{}); for(const p of $$('#vo-parts .part')){p.classList.add('in');await wait(90)} };
+// ao abrir versão normal, sai do modo círculo
+const _ov=openVersion; openVersion=async v=>{ delete $('#vo-cta').dataset.mode; return _ov(v) };
+
+resetEditor();
+</script>
+
+</body></html>
